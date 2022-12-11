@@ -1,14 +1,33 @@
-- name: active_power
-  description: Active Power
+- name: active_load_power
+  description: Active Load Power
   unit: W
   active: true
   modbus:
-    register: 3004
-    read_type: long
+    register: 33147
+    read_type: register
     function_code: 4
     signed: false
+    number_of_decimals: 0
   homeassistant:
     device: sensor
+    scale: 1
+    data_type: uint16
+    precision: 1
+    state_class: measurement
+    device_class: power
+- name: grid_current_power
+  description: Grid Current Power
+  unit: W
+  active: true
+  modbus:
+    register: 33257
+    read_type: long
+    function_code: 4
+    signed: true
+    number_of_decimals: 0
+  homeassistant:
+    device: sensor
+    data_type: int32
     state_class: measurement
     device_class: power
 - name: inverter_temp
@@ -16,7 +35,7 @@
   unit: "°C"
   active: true
   modbus:
-    register: 3041
+    register: 33093
     read_type: register
     function_code: 4
     number_of_decimals: 1
@@ -25,25 +44,26 @@
     device: sensor
     state_class: measurement
     device_class: temperature
-- name: total_power
-  description: Inverter total power generation
-  unit: kWh
+- name: backup_load_power
+  description: Backup Load Power
+  unit: W
   active: true
   modbus:
-    register: 3008
-    read_type: long
+    register: 33148
+    read_type: register
     function_code: 4
     signed: true
+    number_of_decimals: 0
   homeassistant:
     device: sensor
-    state_class: total_increasing
-    device_class: energy
+    state_class: measurement
+    device_class: power
 - name: generation_today
   description: Energy generated today
   unit: kWh
   active: true
   modbus:
-    register: 3014
+    register: 33035
     read_type: register
     function_code: 4
     number_of_decimals: 1
@@ -52,26 +72,12 @@
     device: sensor
     state_class: total_increasing
     device_class: energy
-- name: generation_yesterday
-  description: Energy generated yesterday
-  unit: kWh
-  active: true
-  modbus:
-    register: 3015
-    read_type: register
-    function_code: 4
-    number_of_decimals: 1
-    signed: false
-  homeassistant:
-    device: sensor
-    state_class: total_increasing
-    device_class: energy
-- name: total_dc_output_power
-  description: Total DC output power
+- name: dc_output_power
+  description: DC output power
   unit: W
   active: true
   modbus:
-    register: 3006
+    register: 33057
     read_type: long
     function_code: 4
     signed: false
@@ -84,20 +90,7 @@
   unit: kWh
   active: true
   modbus:
-    register: 3010
-    read_type: long
-    function_code: 4
-    signed: false
-  homeassistant:
-    device: sensor
-    state_class: total_increasing
-    device_class: energy
-- name: generation_last_month
-  description: Energy generated last month
-  unit: kWh
-  active: true
-  modbus:
-    register: 3012
+    register: 33031
     read_type: long
     function_code: 4
     signed: false
@@ -110,7 +103,7 @@
   unit: kWh
   active: true
   modbus:
-    register: 3016
+    register: 33037
     read_type: long
     function_code: 4
     signed: false
@@ -123,7 +116,7 @@
   unit: kWh
   active: true
   modbus:
-    register: 3018
+    register: 33039
     read_type: long
     function_code: 4
     signed: false
@@ -131,79 +124,330 @@
     device: sensor
     state_class: total_increasing
     device_class: energy
-# frequency currently not supported by home-assistant, topic is in discussion
-#- name: grid_frequency
-#  description: Grid Frequency
-#  unit: Hz
-#  active: true
-#  modbus:
-#    register: 3042
-#    read_type: register
-#    function_code: 4
-#    number_of_decimals: 2
-#    signed: false
-#  homeassistant:
-#    device: sensor
-#    state_class: measurement
-#    device_class: frequency
-- name: system_datetime
-  description: System DateTime
-  unit:
+- name: daily_energy_imported
+  description: Daily Energy Imported
+  unit: kWh
   active: true
   modbus:
-    register: [3072, 3073, 3074, 3075, 3076, 3077] # [year, month, day, hour, minute, seconds]
-    read_type: composed_datetime
-    function_code: 4
-  homeassistant:
-    device: sensor
-    state_class:
-    device_class: timestamp
-- name: serial_number
-  description: Serial Number
-  unit:
-  active: false
-  modbus:
-    register: 3229
+    register: 33171
     read_type: register
     function_code: 4
-    number_of_decimals: 0
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy
+- name: daily_energy_exported
+  description: Daily Energy Exported
+  unit: kWh
+  active: true
+  modbus:
+    register: 33175
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: total      
+    device_class: energy
+- name: total_energy_imported
+  description: Total Energy Imported
+  unit: kWh
+  active: true
+  modbus:
+    register: 33169
+    read_type: long
+    function_code: 4
     signed: false
   homeassistant:
     device: sensor
-    state_class:
-    device_class:
-- name: power_limitation
-  description: Power limitation
+    state_class: total
+    device_class: energy
+- name: total_energy_exported
+  description: Total Energy Exported
+  unit: kWh
+  active: true
+  modbus:
+    register: 33173
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy
+- name: daily_consumption
+  description: Daily Consumption
+  unit: kWh
+  active: true
+  modbus:
+    register: 33179
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy
+- name: total_consumption    
+  description: Total Consumption
+  unit: kWh
+  active: true
+  modbus:
+    register: 33177
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy
+- name: battery_power    
+  description: Battery Power
+  unit: W
+  active: true
+  modbus:
+    register: 33149
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: power
+- name: battery_soc
+  description: Battery SOC    
   unit: "%"
   active: true
   modbus:
-    register: 3051
+    register: 33139
     read_type: register
-    function_code: 3
-    write_function_code: 6
-    number_of_decimals: 2
+    function_code: 4
     signed: false
+    number_of_decimals: 0
   homeassistant:
-    device: number
-    min: 0
-    max: 100
-    step: 0.01
-    state_class:
-    device_class:
-- name: on_off
-  description: On/Off
-  unit:
+    device: sensor
+    state_class: measurement
+    device_class: battery
+- name: battery_soh
+  description: Battery SOH  
+  unit: "%"
   active: true
   modbus:
-    register: 3006
+    register: 33140
     read_type: register
-    function_code: 3
-    write_function_code: 6
+    function_code: 4
+    signed: false
     number_of_decimals: 0
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: battery
+- name: battery_voltage
+  description: Battery Voltage  
+  unit: V
+  active: true
+  modbus:
+    register: 33141
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: voltage
+- name: battery_current
+  description: Battery Current
+  unit: A
+  active: true
+  modbus:
+    register: 33142
+    read_type: long
+    function_code: 4
     signed: false
   homeassistant:
-    device: switch
-    payload_on: 190
-    payload_off: 222
-    state_class:
-    device_class:
+    device: sensor
+    state_class: measurement
+    device_class: current
+- name: battery_daily_charge
+  description: Battery Daily Charge
+  unit: kWh
+  active: true
+  modbus:
+    register: 33163
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy    
+- name: battery_daily_discharge
+  description: Battery Daily Discharge
+  unit: kWh
+  active: true
+  modbus:
+    register: 33167
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: total      
+    device_class: energy
+- name: battery_total_charge
+  description: Battery Total Charge
+  unit: kWh
+  active: true
+  modbus:
+    register: 33161
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: total      
+    device_class: energy
+- name: battery_total_discharge
+  description: Battery Total Discharge
+  unit: kWh
+  active: true
+  modbus:
+    register: 33165
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy       
+- name: pv1_voltage
+  description: PV1 Voltage
+  unit: V
+  active: true
+  modbus:
+    register: 33049
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: voltage  
+- name: pv2_voltage
+  description: PV2 Voltage
+  unit: V  
+  active: true
+  modbus:
+    register: 33051
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: voltage
+- name: pv1_current
+  description: PV1 Current
+  unit: A 
+  active: true
+  modbus:
+    register: 33050
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: current  
+- name: pv2_current
+  description: PV2 Current
+  unit: A
+  active: true
+  modbus:
+    register: 33052
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 1
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: current  
+- name: inverter_ac_power
+  description: Inverter AC Power
+  unit: W
+  active: true
+  modbus:
+    register: 33079
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: power
+- name: inverter_current
+  description: Inverter Current
+  unit: A
+  active: true
+  modbus:
+    register: 33076
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 0
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: current
+- name: total_generation
+  description: Total Generated
+  unit: kWh
+  active: true
+  modbus:
+    register: 33029
+    read_type: long
+    function_code: 4
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: total
+    device_class: energy
+- name: generation_yesterday
+  description: Energy generated yesterday
+  unit: kWh
+  active: true
+  modbus:
+    register: 33036
+    read_type: register
+    function_code: 4
+    number_of_decimals: 1
+    signed: false
+  homeassistant:
+    device: sensor
+    state_class: total_increasing
+    device_class: energy
+- name: clean_energy_status
+  description: Clean Energy Status
+  unit: "%"
+  active: true
+  modbus:
+    register: 33181
+    read_type: register
+    function_code: 4
+    signed: false
+    number_of_decimals: 0
+  homeassistant:
+    device: sensor
+    state_class: measurement
+    device_class: battery
