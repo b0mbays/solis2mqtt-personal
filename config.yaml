@@ -1,0 +1,15 @@
+device: /dev/ttyUSB0
+slave_address: 1
+poll_interval: 60
+poll_interval_if_off: 600
+inverter:
+    name: solis2mqtt
+    manufacturer: Ginlong Technologies
+    model: solis2mqtt
+mqtt:
+    url: 192.168.1.215
+    port: 1883     
+    use_ssl: false
+    validate_cert: true
+    user: mqtt-user
+    passwd: c1235046
